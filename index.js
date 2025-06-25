@@ -4,12 +4,8 @@ import express from 'express';
 import dotenv from 'dotenv'
 import connectDB from './db/connectDB.js';
 import userRoute from './routes/userRoutes.js'
-<<<<<<< HEAD
 import commentRoute from './routes/commentRoutes.js'
 import postRoute from './routes/postRoutes.js'
-=======
-import cors from 'cors';
->>>>>>> 772d270beb0fda73660cf6834a4fb8fe2f87835e
 
 
 
@@ -27,9 +23,9 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 
-app.use('/api/users',userRoute);
-app.use('/api/comments',commentRoute);
-app.use('/api/posts',postRoute)
+app.use('/api/users', userRoute);
+app.use('/api/comments', commentRoute);
+app.use('/api/posts', postRoute)
 
 // Start server
 app.listen(PORT, () => {
