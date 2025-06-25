@@ -23,7 +23,6 @@ connectDB();
 
 
 app.use('/api/users',userRoute);
-app.use('/api/comments',commentRoute);
 
 // Start server
 app.listen(PORT, () => {
