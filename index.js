@@ -1,9 +1,17 @@
 // index.js
 
-const express = require('express');
+import express from 'express';
+import dotenv from 'dotenv'
+import connectDB from './db/connectDB.js';
+
+
+
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// database connection
+connectDB();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
