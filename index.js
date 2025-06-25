@@ -3,6 +3,7 @@
 import express from 'express';
 import dotenv from 'dotenv'
 import connectDB from './db/connectDB.js';
+import userRoute from './routes/userRoutes.js'
 
 
 
@@ -10,16 +11,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// database connection
-connectDB();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
 
-app.get('/', (req, res) => {
-  res.send('Business app backend');
-});
+// database connection
+connectDB();
+
+
+app.use('/api/users',userRoute);
 
 // Start server
 app.listen(PORT, () => {
