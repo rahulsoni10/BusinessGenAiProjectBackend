@@ -6,9 +6,9 @@ export const register = async (req, res) => {
     try {
         console.log(req.body);
 
-        const { user_name, email, password, role } = req.body;
+        const { name, email, password, role } = req.body;
         const hashPassword = await bcrypt.hash(password, 10);
-        const user = new User({ user_name, email, password: hashPassword, role });
+        const user = new User({ name, email, password: hashPassword, role });
         await user.save();
 
         // token generation for user
@@ -20,7 +20,7 @@ export const register = async (req, res) => {
             token,
             user: {
                 id: user._id,
-                user_name: user.user_name,
+                name: user.name,
                 email: user.email,
                 role: user.role
             }
@@ -47,7 +47,7 @@ export const login = async (req, res) => {
             token,
             user: {
                 id: user._id,
-                user_name: user.user_name,
+                name: user.name,
                 email: user.email,
                 role: user.role
             }
