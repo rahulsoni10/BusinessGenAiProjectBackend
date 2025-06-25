@@ -7,21 +7,16 @@ import {
   updatePost
 } from '../controllers/postController.js';
 
+import upload from '../middleware/uploadMiddleware.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import adminMiddleware from '../middleware/adminMiddleware.js';
+
 const router = express.Router();
 
-// Create new post
-router.post('/create', createPost);
-
-// Get all posts
-router.get('/', getAllPosts);
-
-// Get single post by ID
-router.get('/:id', getPostById);
-
-// Delete a post
-router.delete('/:id', deletePost);
-
-// Update a post
-router.put('/:id', updatePost);
+router.post('/create', authMiddleware, adminMiddleware, upload.single('image'), createPost);
+router.get('/', authMiddleware, getAllPosts);
+router.get('/:id', authMiddleware, getPostById);
+router.put('/:id', authMiddleware, adminMiddleware, upload.single('image'), updatePost);
+router.delete('/:id', authMiddleware, adminMiddleware, deletePost);
 
 export default router;

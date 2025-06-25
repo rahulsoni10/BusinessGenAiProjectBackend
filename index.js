@@ -6,6 +6,7 @@ import connectDB from './db/connectDB.js';
 import userRoute from './routes/userRoutes.js'
 import commentRoute from './routes/commentRoutes.js'
 import postRoute from './routes/postRoutes.js'
+import cors from 'cors';
 
 
 

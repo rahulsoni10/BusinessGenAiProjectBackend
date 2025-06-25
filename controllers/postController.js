@@ -1,54 +1,133 @@
-import Post from '../models/post.model.js';
+// controllers/postController.js
+import Post from '../models/postModel.js';
+import Image from '../models/imageModel.js';
+import { uploadToCloudinary } from '../helpers/cloudinaryHelper.js';
+import fs from 'fs';
+import cloudinary from '../config/cloudinary.js';
 
+// Create Post
 export const createPost = async (req, res) => {
   try {
-    const newPost = new Post(req.body);
-    const savedPost = await newPost.save();
-    res.status(201).json(savedPost);
+    const { title, description } = req.body;
+    const userId = req.userInfo.userId;
+
+    let imageDoc = null;
+    if (req.file) {
+      const { url, publicId } = await uploadToCloudinary(req.file.path);
+      imageDoc = await new Image({ url, publicId, uploadedBy: userId }).save();
+      fs.unlinkSync(req.file.path);
+    }
+
+    const post = await new Post({
+      title,
+      description,
+      author: userId,
+      image: imageDoc?._id || null,
+    }).save();
+
+    res.status(201).json({ success: true, post });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to create post" });
   }
 };
 
+// Get All Posts
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate('author comments');
-    res.status(200).json(posts);
+    const posts = await Post.find()
+      .populate("author", "name")
+      .populate("image"); // Get full image info
+
+    res.status(200).json({ success: true, posts });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, message: "Failed to fetch posts" });
   }
 };
 
+// Get One Post
 export const getPostById = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).populate('author comments');
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-    res.status(200).json(post);
+    const post = await Post.findById(req.params.id)
+      .populate("author", "name")
+      .populate("image");
+
+    if (!post) return res.status(404).json({ success: false, message: "Post not found" });
+
+    res.status(200).json({ success: true, post });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, message: "Error retrieving post" });
   }
 };
 
-export const deletePost = async (req, res) => {
-  try {
-    const deletedPost = await Post.findByIdAndDelete(req.params.id);
-    if (!deletedPost) return res.status(404).json({ error: 'Post not found' });
-    res.status(200).json({ message: 'Post deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
+// Update Post (title, desc, and optional new image)
 export const updatePost = async (req, res) => {
   try {
-    const updatedPost = await Post.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-    if (!updatedPost) return res.status(404).json({ error: 'Post not found' });
-    res.status(200).json(updatedPost);
+    const postId = req.params.id;
+    const { title, description } = req.body;
+    const userId = req.userInfo.userId;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ success: false, message: "Post not found" });
+    if (post.author.toString() !== userId) {
+      return res.status(403).json({ success: false, message: "Not authorized to update this post" });
+    }
+
+    // Optional: handle new image
+    let newImageDoc = null;
+    if (req.file) {
+      // Delete old image if exists
+      if (post.image) {
+        const oldImage = await Image.findById(post.image);
+        if (oldImage) {
+          await cloudinary.uploader.destroy(oldImage.publicId);
+          await Image.findByIdAndDelete(post.image);
+        }
+      }
+
+      // Upload new image
+      const { url, publicId } = await uploadToCloudinary(req.file.path);
+      newImageDoc = await new Image({ url, publicId, uploadedBy: userId }).save();
+      fs.unlinkSync(req.file.path);
+    }
+
+    // Update fields
+    post.title = title || post.title;
+    post.description = description || post.description;
+    if (newImageDoc) post.image = newImageDoc._id;
+
+    await post.save();
+    res.status(200).json({ success: true, message: "Post updated", post });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to update post" });
+  }
+};
+
+// Delete Post + delete associated image
+export const deletePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.userInfo.userId;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ success: false, message: "Post not found" });
+    if (post.author.toString() !== userId) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Delete associated image
+    if (post.image) {
+      const img = await Image.findById(post.image);
+      if (img) {
+        await cloudinary.uploader.destroy(img.publicId);
+        await Image.findByIdAndDelete(post.image);
+      }
+    }
+
+    await Post.findByIdAndDelete(postId);
+    res.status(200).json({ success: true, message: "Post deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error deleting post" });
   }
 };

@@ -1,38 +1,20 @@
-import multer from 'multer';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import multer from "multer";
+import path from "path";
 
-// To support __dirname in ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Set up Multer storage
+// Store files temporarily before uploading to Cloudinary
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
   },
 });
 
-// File filter function
-const checkFileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Not an image! Please upload only images'));
-  }
+const fileFilter = (req, file, cb) => {
+  const allowed = ["image/jpeg", "image/png", "image/jpg"];
+  allowed.includes(file.mimetype) ? cb(null, true) : cb(null, false);
 };
 
-// Multer middleware
-const upload = multer({
-  storage: storage,
-  fileFilter: checkFileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB file size limit
-  },
-});
+const upload = multer({ storage, fileFilter });
 
 export default upload;
