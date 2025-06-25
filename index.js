@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import connectDB from './db/connectDB.js';
 import userRoute from './routes/userRoutes.js'
 import commentRoute from './routes/commentRoutes.js'
+import postRoute from './routes/postRoutes.js'
 
 
 
@@ -23,8 +24,10 @@ connectDB();
 
 app.use('/api/users',userRoute);
 app.use('/api/comments',commentRoute);
+app.use('/api/posts',postRoute)
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
