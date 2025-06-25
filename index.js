@@ -4,6 +4,7 @@ import express from 'express';
 import dotenv from 'dotenv'
 import connectDB from './db/connectDB.js';
 import userRoute from './routes/userRoutes.js'
+import commentRoute from './routes/commentRoutes.js'
 
 
 
@@ -21,6 +22,7 @@ connectDB();
 
 
 app.use('/api/users',userRoute);
+app.use('/api/comments',commentRoute);
 
 // Start server
 app.listen(PORT, () => {
