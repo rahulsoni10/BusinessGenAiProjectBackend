@@ -76,7 +76,7 @@ export const login = async (req, res) => {
         role: user.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "30m" }
+      { expiresIn: "60m" }
     );
 
     return res.status(200).json({

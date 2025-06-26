@@ -7,6 +7,7 @@ import dotenv from 'dotenv'
 import connectDB from './db/connectDB.js';
 import userRoute from './routes/userRoutes.js'
 import commentRoute from './routes/commentRoutes.js'
+import commentReplyRoute from './routes/commentReplyRoutes.js'
 import postRoute from './routes/postRoutes.js'
 import cors from 'cors';
 
@@ -28,6 +29,7 @@ connectDB();
 app.use('/api/users', userRoute);
 app.use('/api/comments', commentRoute);
 app.use('/api/posts', postRoute)
+app.use('/api/comment-replies', commentReplyRoute);
 
 // Start server
 app.listen(PORT, () => {

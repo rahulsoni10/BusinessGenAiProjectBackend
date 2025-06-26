@@ -50,7 +50,17 @@ export const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
       .populate("author", "name")
-      .populate("image");
+      .populate("image")
+      .populate({
+        path: "comments",
+         populate: [
+          { path: "user", select: "name" },
+          {
+            path: "replies",
+            populate: { path: "user", select: "name" } // also get replier name
+          }
+        ]
+      });
 
     if (!post) return res.status(404).json({ success: false, message: "Post not found" });
 
