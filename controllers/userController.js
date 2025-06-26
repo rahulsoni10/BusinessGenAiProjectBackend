@@ -27,6 +27,12 @@ export const register = async (req, res) => {
     await newUser.save();
 
     return res.status(201).json({
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+      },
       success: true,
       message: "User registered successfully!",
     });
@@ -74,6 +80,12 @@ export const login = async (req, res) => {
     );
 
     return res.status(200).json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
       success: true,
       message: "Logged in successfully.",
       accessToken,
