@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 
 const replySchema = new mongoose.Schema({
   content: {type: String,required: true},
-  user: {type: mongoose.Schema.Types.ObjectId,ref: 'User',required: true},
+  userid: {type: mongoose.Schema.Types.ObjectId,ref: 'User',required: true},
   target_type: {type: String,enum: ['post', 'comment', 'complaint'],required: true},
   target_id: {type: mongoose.Schema.Types.ObjectId,required: true},
   is_private: {type: Boolean,default: false}
