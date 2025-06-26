@@ -24,3 +24,16 @@ export const raiseComplaint = async (req, res) => {
     res.status(500).json({ error: 'Failed to raise complaint.' });
   }
 };
+
+export const getUserComplaints = async (req, res) => {
+  try {
+    const userId = req.userInfo.userId; // assuming authMiddleware sets req.user
+    console.log(userId);
+    const complaints = await UserComplaint.find({ userId: userId });
+    res.json(complaints);
+  } catch (error) {
+    console.error('Error fetching user complaints:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
