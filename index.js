@@ -2,6 +2,8 @@
 
 import express from 'express';
 import dotenv from 'dotenv'
+
+
 import connectDB from './db/connectDB.js';
 import userRoute from './routes/userRoutes.js'
 import commentRoute from './routes/commentRoutes.js'
@@ -9,10 +11,8 @@ import postRoute from './routes/postRoutes.js'
 import userComplaintRoute from './routes/userComplaintRoutes.js';
 import cors from 'cors';
 
-
-
-
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
