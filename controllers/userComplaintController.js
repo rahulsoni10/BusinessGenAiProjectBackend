@@ -1,4 +1,28 @@
 import UserComplaint from "../models/userComplaintModel.js";
+import fetch from "node-fetch";
+
+const classifySeverity = async (description) => {
+  const response = await fetch(
+    "https://router.huggingface.co/hf-inference/models/facebook/bart-large-mnli",
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        inputs: description,
+        parameters: {
+          candidate_labels: ["Moderate", "High", "Urgent"],
+        },
+      }),
+    }
+  );
+
+  const result = await response.json();
+  const predictedSeverity = result?.labels?.[0] || "Moderate";
+  return predictedSeverity;
+};
 
 export const raiseComplaint = async (req, res) => {
   try {
@@ -9,18 +33,20 @@ export const raiseComplaint = async (req, res) => {
     if (!orderId || !productType || !description) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
-    console.log(req.userInfo.userId);
-    
+   const severity = await classifySeverity(description);
+
     const complaint = new UserComplaint({
       orderId,
       productType,
       description,
-      userId: req.userInfo.userId
+      userId: req.userInfo.userId,
+      severity, // <- save predicted severity
     });
 
     await complaint.save();
     res.status(201).json({ message: 'Complaint raised successfully.', complaint });
   } catch (error) {
+    console.error("Complaint error:", error);
     res.status(500).json({ error: 'Failed to raise complaint.' });
   }
 };
