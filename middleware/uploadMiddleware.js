@@ -1,19 +1,29 @@
-import cloudinary from '../config/cloudinary.js';
-import fs from 'fs';
+import multer from "multer";
+import path from "path";
 
-export const uploadToCloudinary = async (filePath) => {
-  try {
-    const result = await cloudinary.uploader.upload(filePath);
+// Set storage engine
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  },
+});
 
-    // Delete local file after successful upload
-    fs.unlinkSync(filePath); // or await fs.promises.unlink(filePath);
-
-    return {
-      url: result.secure_url,
-      publicId: result.public_id,
-    };
-  } catch (error) {
-    console.error('Error uploading to Cloudinary:', error);
-    throw new Error('Cloudinary upload failed');
+// File filter: allow only images
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed"));
   }
 };
+
+// Export multer upload middleware
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+});
+
+export default upload;
