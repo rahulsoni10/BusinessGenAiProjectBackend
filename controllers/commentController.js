@@ -8,7 +8,7 @@ async function classifySentiment(customerComment) {
 		"https://router.huggingface.co/hf-inference/models/cardiffnlp/twitter-roberta-base-sentiment",
 		{
 			headers: {
-				Authorization: `Bearer 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`,
+				Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}`,
 				"Content-Type": "application/json",
 			},
 			method: "POST",
