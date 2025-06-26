@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 export const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-    
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -13,7 +13,7 @@ export const register = async (req, res) => {
         message: "User already exists with this email. Please use a different email.",
       });
     }
-    
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -26,6 +26,15 @@ export const register = async (req, res) => {
 
     await newUser.save();
 
+    // accessToken needed because after registration user will navigate to
+    // dashboard without login so we need token for auth.
+    const accessToken = jwt.sign(
+      { id: newUser._id, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '30m' }
+    );
+
+
     return res.status(201).json({
       user: {
         id: newUser._id,
@@ -35,6 +44,7 @@ export const register = async (req, res) => {
       },
       success: true,
       message: "User registered successfully!",
+      accessToken,
     });
   } catch (e) {
     console.error(e);
@@ -90,7 +100,7 @@ export const login = async (req, res) => {
       message: "Logged in successfully.",
       accessToken,
       //user should be returned so that it can be captured in authcontext
-      
+
       user: {
         id: user._id,
         user_name: user.user_name,
