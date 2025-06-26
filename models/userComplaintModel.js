@@ -5,6 +5,7 @@ const userComplaintSchema = new mongoose.Schema({
     productType: {type: String,required: true,trim: true},
     description: { type: String, required: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    severity: {type: String,enum: ['Moderate', 'High', 'Urgent'],default: 'Moderate'},
     status: {type: String,enum: ['open', 'in_progress', 'resolved'],default: 'open'},
     createdAt: { type: Date, default: Date.now }
 });
