@@ -2,3 +2,4 @@ node_modules/
 logs/
 IDE/editor files (.vscode/, .idea/)
 OS-specific files (.DS_Store, Thumbs.db)
+.env

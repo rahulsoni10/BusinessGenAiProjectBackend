@@ -4,11 +4,13 @@ import fetch from 'node-fetch';
 
 
 async function classifySentiment(customerComment) {
+	
 	const response = await fetch(
 		"https://router.huggingface.co/hf-inference/models/cardiffnlp/twitter-roberta-base-sentiment",
 		{
 			headers: {
 				Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}`,
+				
 				"Content-Type": "application/json",
 			},
 			method: "POST",
