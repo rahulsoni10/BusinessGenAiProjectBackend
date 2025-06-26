@@ -11,6 +11,7 @@ import commentReplyRoute from './routes/commentReplyRoutes.js'
 import postRoute from './routes/postRoutes.js'
 import userComplaintRoute from './routes/userComplaintRoutes.js';
 import complaintReplyRoute from './routes/complaintReplyRoutes.js';
+import aiRoutes from "./routes/aiRoutes.js";
 import cors from 'cors';
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.use('/api/posts', postRoute)
 app.use('/api/comment-replies', commentReplyRoute);
 app.use('/api/complaint', userComplaintRoute);
 app.use('/api/complaint-replies', complaintReplyRoute);
+app.use("/api/ai", aiRoutes);
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
