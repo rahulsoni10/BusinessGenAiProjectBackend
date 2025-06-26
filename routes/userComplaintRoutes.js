@@ -1,13 +1,13 @@
 import express from 'express';
-import { register, login } from '../controllers/userController.js';
 import { raiseComplaint } from '../controllers/userComplaintController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 
-router.post('/register', register);
-router.post('/login', login);
 router.post('/raise', authMiddleware, raiseComplaint);
+router.get('/raise',(req,res)=>{
+    res.send("raise a complain");
+})
 
 
 export default router;

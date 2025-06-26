@@ -9,6 +9,7 @@ import userRoute from './routes/userRoutes.js'
 import commentRoute from './routes/commentRoutes.js'
 import commentReplyRoute from './routes/commentReplyRoutes.js'
 import postRoute from './routes/postRoutes.js'
+import userComplaintRoute from './routes/userComplaintRoutes.js';
 import cors from 'cors';
 
 dotenv.config();

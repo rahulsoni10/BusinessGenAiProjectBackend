@@ -89,6 +89,15 @@ export const login = async (req, res) => {
       success: true,
       message: "Logged in successfully.",
       accessToken,
+      //user should be returned so that it can be captured in authcontext
+      
+      user: {
+        id: user._id,
+        user_name: user.user_name,
+        email: user.email,
+        role: user.role
+      }
+
     });
   } catch (e) {
     console.error(e);
