@@ -55,7 +55,11 @@ export const getUserComplaints = async (req, res) => {
   try {
     const userId = req.userInfo.userId; // assuming authMiddleware sets req.user
     console.log(userId);
-    const complaints = await UserComplaint.find({ userId: userId });
+    const complaints = await UserComplaint.find({ userId: userId })
+    .populate({
+      path: "replies",
+      populate: { path: "userId", select: "name" }
+    });
     res.json(complaints);
   } catch (error) {
     console.error('Error fetching user complaints:', error);
