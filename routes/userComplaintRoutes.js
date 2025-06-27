@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/raise', authMiddleware, raiseComplaint);
 // Fetch all complaints
-router.get('/raise', authMiddleware, getUserComplaints);
+router.get('/', authMiddleware, getUserComplaints);
 //Close the complaint
 router.put('/:id/close', authMiddleware, closeComplaint);
 
