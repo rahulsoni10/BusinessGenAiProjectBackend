@@ -30,8 +30,8 @@ connectDB();
 
 
 app.use('/api/users', userRoute);
-app.use('/api/comments', commentRoute);
 app.use('/api/posts', postRoute)
+app.use('/api/comments', commentRoute);
 app.use('/api/comment-replies', commentReplyRoute);
 app.use('/api/complaint', userComplaintRoute);
 app.use('/api/complaint-replies', complaintReplyRoute);
