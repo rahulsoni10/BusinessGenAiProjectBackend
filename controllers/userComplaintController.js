@@ -1,5 +1,6 @@
 import UserComplaint from "../models/userComplaintModel.js";
 import fetch from "node-fetch";
+import User from "../models/userModel.js";
 
 const classifySeverity = async (description) => {
   const response = await fetch(
@@ -33,7 +34,8 @@ export const raiseComplaint = async (req, res) => {
     if (!orderId || !productType || !description) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
-   const severity = await classifySeverity(description);
+  //  const severity = await classifySeverity(description);
+   const severity = "High";
 
     const complaint = new UserComplaint({
       orderId,
@@ -93,5 +95,24 @@ export const closeComplaint = async (req, res) => {
   } catch (error) {
     console.error("Error closing complaint:", error);
     res.status(500).json({ success: false, message: "Failed to close complaint." });
+  }
+};
+
+
+
+
+// admin controllers
+
+
+export const getAdminComplaints = async (req, res) => {
+  try {
+    const complaints = await UserComplaint.find()
+      .populate('userId', 'name email') // ✅ populate using correct field
+      .sort({ createdAt: -1 }); // newest first
+
+    res.status(200).json({ success: true, complaints });
+  } catch (error) {
+    console.error('Error fetching all complaints:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch complaints' });
   }
 };
