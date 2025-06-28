@@ -95,3 +95,25 @@ export const closeComplaint = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to close complaint." });
   }
 };
+
+export const getAllUserComplaints = async (req, res) => {
+  try {
+    const complaints = await UserComplaint.find()
+      .populate({
+        path: "userId",
+        select: "name email", // optional: choose what to return
+      })
+      .populate({
+        path: "replies",
+        populate: {
+          path: "userId",
+          select: "name",
+        },
+      });
+
+    res.status(200).json({ success: true, complaints });
+  } catch (error) {
+    console.error("Error fetching all user complaints:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
