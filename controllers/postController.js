@@ -24,8 +24,15 @@ export const createPost = async (req, res) => {
       author: userId,
       image: imageDoc?._id || null,
     }).save();
+    
+    const populatedPost = await Post.findById(post._id)
+          .populate({
+            path: 'image',
+            select: 'url public_id -_id', // Only return useful fields
+          });
 
-    res.status(201).json({ success: true, post });
+    res.status(201).json({ success: true, post: populatedPost });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Failed to create post" });
