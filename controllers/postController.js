@@ -12,6 +12,8 @@ export const createPost = async (req, res) => {
     const userId = req.userInfo.userId;
 
     let imageDoc = null;
+    console.log('File received:', req.file);
+
     if (req.file) {
       const { url, publicId } = await uploadToCloudinary(req.file.path);
       imageDoc = await new Image({ url, publicId, uploadedBy: userId }).save();
