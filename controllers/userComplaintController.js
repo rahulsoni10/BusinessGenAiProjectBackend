@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 
 const classifySeverity = async (description) => {
   const response = await fetch(
-    "https://router.huggingface.co/hf-inference/models/facebook/bart-large-mnli",
+    "https://router.huggingface.co/hf-inference/models/joeddav/xlm-roberta-large-xnli",
     {
       headers: {
         Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}`,
