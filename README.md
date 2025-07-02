@@ -38,7 +38,6 @@ This is the Node.js and Express API that powers the Smart Feedback Portal. It ha
 1.  **Clone the repo and enter the directory:**
     ```bash
     git clone https://github.com/iitian360/BusinessGenAiBackend
-    cd server
     ```
 
 2.  **Install dependencies:**
