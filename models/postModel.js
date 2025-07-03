@@ -6,11 +6,13 @@ const postSchema = new mongoose.Schema({
   description: { type: String, required: true },
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   likes: { type: Number, default: 0 },
+  likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-  image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image', required: false }, // Now store Image ID
-}, {
-  timestamps: true
-});
+  image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
+  },{
+    timestamps: true
+  });
 
 const Post = mongoose.model('Post', postSchema);
 export default Post;
+

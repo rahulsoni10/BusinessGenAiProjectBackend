@@ -9,12 +9,10 @@ import userRoute from './routes/userRoutes.js'
 import commentRoute from './routes/commentRoutes.js'
 import commentReplyRoute from './routes/commentReplyRoutes.js'
 import postRoute from './routes/postRoutes.js'
-import userComplaintRoute from './routes/userComplaintRoutes.js';
+import complaintRoute from './routes/userComplaintRoutes.js';
 import complaintReplyRoute from './routes/complaintReplyRoutes.js';
 import aiRoutes from "./routes/aiRoutes.js";
 import cors from 'cors';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,7 +31,7 @@ app.use('/api/users', userRoute);
 app.use('/api/posts', postRoute)
 app.use('/api/comments', commentRoute);
 app.use('/api/comment-replies', commentReplyRoute);
-app.use('/api/complaints', userComplaintRoute);
+app.use('/api/complaints', complaintRoute);
 app.use('/api/complaint-replies', complaintReplyRoute);
 app.use("/api/ai", aiRoutes);
 // Start server

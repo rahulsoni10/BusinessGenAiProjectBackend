@@ -26,8 +26,15 @@ export const createPost = async (req, res) => {
       author: userId,
       image: imageDoc?._id || null,
     }).save();
+    
+    const populatedPost = await Post.findById(post._id)
+          .populate({
+            path: 'image',
+            select: 'url public_id -_id', // Only return useful fields
+          });
 
-    res.status(201).json({ success: true, post });
+    res.status(201).json({ success: true, post: populatedPost });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Failed to create post" });
@@ -38,9 +45,18 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find()
-      .populate("author", "name")
-      .populate("image"); // Get full image info
-
+          .populate('author', 'name')
+  .populate('image')
+  .populate({
+    path: 'comments',
+    populate: [
+      { path: 'user', select: 'name' },
+      {
+        path: 'replies',
+        populate: { path: 'user', select: 'name' }  // ⬅️ Populating reply user name
+      }
+    ]
+  });
     res.status(200).json({ success: true, posts });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to fetch posts" });
@@ -141,5 +157,34 @@ export const deletePost = async (req, res) => {
     res.status(200).json({ success: true, message: "Post deleted" });
   } catch (err) {
     res.status(500).json({ success: false, message: "Error deleting post" });
+  }
+};
+
+
+// Toggle Like Post
+export const likePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.userInfo.userId;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ success: false, message: "Post not found" });
+
+    const hasLiked = post.likedBy.includes(userId);
+
+    if (hasLiked) {
+      post.likes -= 1;
+      post.likedBy.pull(userId); // remove user from likedBy
+    } else {
+      post.likes += 1;
+      post.likedBy.push(userId); // add user to likedBy
+    }
+
+    await post.save();
+
+    res.status(200).json({ success: true, liked: !hasLiked, likes: post.likes });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to like/unlike post" });
   }
 };

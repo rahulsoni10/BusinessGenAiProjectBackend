@@ -4,7 +4,8 @@ import {
   getAllPosts,
   getPostById,
   deletePost,
-  updatePost
+  updatePost,
+  likePost
 } from '../controllers/postController.js';
 
 import upload from '../middleware/uploadMiddleware.js';
@@ -18,5 +19,7 @@ router.get('/', authMiddleware, getAllPosts);
 router.get('/:id', authMiddleware, getPostById);
 router.put('/:id', authMiddleware, adminMiddleware, upload.single('image'), updatePost);
 router.delete('/:id', authMiddleware, adminMiddleware, deletePost);
+router.put('/:id/like', authMiddleware, likePost);
+
 
 export default router;

@@ -1,20 +1,18 @@
 import express from 'express';
-import { getUserComplaints, raiseComplaint, closeComplaint, getAdminComplaints} from '../controllers/userComplaintController.js';
+import { getUserComplaints, raiseComplaint, closeComplaint, getAllUserComplaints} from '../controllers/userComplaintController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 import adminMiddleware from '../middleware/adminMiddleware.js';
 const router = express.Router();
 
 
 router.post('/raise', authMiddleware, raiseComplaint);
-// Fetch all complaints
-router.get('/raise', authMiddleware, getUserComplaints);
+// Fetch user complaints
+router.get('/user', authMiddleware, getUserComplaints);
+
+
+// Get all complaints (admin)
+router.get('/all', authMiddleware, adminMiddleware, getAllUserComplaints);
 //Close the complaint
-router.put('/:id/close', authMiddleware, closeComplaint);
-
-
-
-// admin controllers
-
-router.get('/admin/allcomplaints', authMiddleware,adminMiddleware, getAdminComplaints);
+router.patch('/close/:id', authMiddleware, closeComplaint);
 
 export default router;

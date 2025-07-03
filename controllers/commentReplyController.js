@@ -17,6 +17,7 @@ export const createCommentReply = async (req, res) => {
     await Comment.findByIdAndUpdate(commentId, {
       $push: { replies: reply._id },
     });
+    await reply.populate("user", "name"); 
 
     res.status(201).json({ success: true, reply });
   } catch (error) {
