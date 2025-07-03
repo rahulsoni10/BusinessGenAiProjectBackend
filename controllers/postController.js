@@ -186,3 +186,4 @@ export const likePost = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to like/unlike post" });
   }
 };
+

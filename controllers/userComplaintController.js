@@ -51,16 +51,33 @@ export const raiseComplaint = async (req, res) => {
   }
 };
 
+// 
+
 export const getUserComplaints = async (req, res) => {
   try {
-    const userId = req.userInfo.userId; // assuming authMiddleware sets req.user
-    console.log(userId);
-    const complaints = await UserComplaint.find({ userId: userId })
-    .populate({
-      path: "replies",
-      populate: { path: "userId", select: "name" }
+    const userId = req.userInfo.userId;
+ 
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+    const skip = (page - 1) * limit;
+ 
+    const totalComplaints = await UserComplaint.countDocuments({ userId });
+ 
+    const complaints = await UserComplaint.find({ userId })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "replies",
+        populate: { path: "userId", select: "name" },
+      });
+ 
+    res.json({
+      complaints,
+      totalPages: Math.ceil(totalComplaints / limit),
+      currentPage: page,
+      totalComplaints,
     });
-    res.json(complaints);
   } catch (error) {
     console.error('Error fetching user complaints:', error);
     res.status(500).json({ message: 'Server error' });
