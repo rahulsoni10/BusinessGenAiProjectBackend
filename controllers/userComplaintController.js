@@ -4,7 +4,7 @@ import User from "../models/userModel.js";
 
 const classifySeverity = async (description) => {
   const response = await fetch(
-    "https://router.huggingface.co/hf-inference/models/facebook/bart-large-mnli",
+    "https://router.huggingface.co/hf-inference/models/joeddav/xlm-roberta-large-xnli",
     {
       headers: {
         Authorization: `Bearer ${process.env.HUGGING_FACE_API_KEY}`,
@@ -53,21 +53,7 @@ export const raiseComplaint = async (req, res) => {
   }
 };
 
-// export const getUserComplaints = async (req, res) => {
-//   try {
-//     const userId = req.userInfo.userId; // assuming authMiddleware sets req.user
-//     console.log(userId);
-//     const complaints = await UserComplaint.find({ userId: userId })
-//     .populate({
-//       path: "replies",
-//       populate: { path: "userId", select: "name" }
-//     });
-//     res.json(complaints);
-//   } catch (error) {
-//     console.error('Error fetching user complaints:', error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
+
 
 export const getUserComplaints = async (req, res) => {
   try {
