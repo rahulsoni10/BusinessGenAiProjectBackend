@@ -1,6 +1,6 @@
-import UserComplaint from "../models/userComplaintModel.js";
+import UserComplaint from "../models/UserComplaint.model.js";
 import fetch from "node-fetch";
-import User from "../models/userModel.js";
+import User from "../models/User.model.js";
 
 const classifySeverity = async (description) => {
   const response = await fetch(

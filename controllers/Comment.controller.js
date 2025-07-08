@@ -1,5 +1,5 @@
-import Post from '../models/postModel.js';
-import Comment from '../models/commentModel.js';
+import Post from '../models/Post.model.js';
+import Comment from '../models/Comment.model.js';
 import fetch from 'node-fetch';
 
 

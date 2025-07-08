@@ -1,6 +1,6 @@
 // controllers/complaintReplyController.js
-import ComplaintReply from '../models/complaintRelpyModel.js'
-import UserComplaint from '../models/userComplaintModel.js';
+import ComplaintReply from '../models/ComplaintRelpy.model.js'
+import UserComplaint from '../models/UserComplaint.model.js';
 
 export const createComplaintReply = async (req, res) => {
   try {

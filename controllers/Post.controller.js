@@ -1,6 +1,6 @@
 // controllers/postController.js
-import Post from '../models/postModel.js';
-import Image from '../models/imageModel.js';
+import Post from '../models/Post.model.js';
+import Image from '../models/Image.model.js';
 import { uploadToCloudinary } from '../helpers/cloudinaryHelper.js';
 import fs from 'fs';
 import cloudinary from '../config/cloudinary.js';

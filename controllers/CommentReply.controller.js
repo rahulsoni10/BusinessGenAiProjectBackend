@@ -1,6 +1,6 @@
 // controllers/commentReplyController.js
-import CommentReply from "../models/commentReplyModel.js";
-import Comment from "../models/commentModel.js";
+import CommentReply from "../models/CommentReply.model.js";
+import Comment from "../models/Comment.model.js";
 
 export const createCommentReply = async (req, res) => {
   try {
