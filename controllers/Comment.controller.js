@@ -65,6 +65,9 @@ export const createComment = async (req, res) => {
       post: postId,
     }).save();
 
+   // Populate the user field after saving
+    newComment = await newComment.populate('user', 'name');  
+    
     // Add comment reference to the corresponding post
     await Post.findByIdAndUpdate(postId, {
       $push: { comments: newComment._id },
