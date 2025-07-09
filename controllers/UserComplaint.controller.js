@@ -2,6 +2,9 @@ import UserComplaint from "../models/UserComplaint.model.js";
 import fetch from "node-fetch";
 import User from "../models/User.model.js";
 
+
+
+
 const classifySeverity = async (description) => {
   const response = await fetch(
     "https://router.huggingface.co/hf-inference/models/joeddav/xlm-roberta-large-xnli",
@@ -25,6 +28,9 @@ const classifySeverity = async (description) => {
   return predictedSeverity;
 };
 
+
+
+
 export const raiseComplaint = async (req, res) => {
   try {
     const { orderId, productType, description } = req.body;
@@ -35,7 +41,7 @@ export const raiseComplaint = async (req, res) => {
       return res.status(400).json({ error: 'All fields are required.' });
     }
   //  const severity = await classifySeverity(description);
-   const severity = "High";
+   const severity = "High";// dummy variable just for testing
 
     const complaint = new UserComplaint({
       orderId,
@@ -52,6 +58,7 @@ export const raiseComplaint = async (req, res) => {
     res.status(500).json({ error: 'Failed to raise complaint.' });
   }
 };
+
 
 
 
@@ -87,6 +94,9 @@ export const getUserComplaints = async (req, res) => {
 };
 
 
+
+
+
 export const closeComplaint = async (req, res) => {
   try {
     const complaintId = req.params.id;
@@ -115,6 +125,9 @@ export const closeComplaint = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to close complaint." });
   }
 };
+
+
+
 
 export const getAllUserComplaints = async (req, res) => {
   try {
