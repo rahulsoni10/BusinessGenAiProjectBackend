@@ -2,7 +2,7 @@
 import Post from '../models/Post.model.js';
 import Image from '../models/Image.model.js';
 import { uploadToCloudinary } from '../helpers/cloudinaryHelper.js';
-import fs from 'fs';
+import { safeDeleteFile } from '../utils/fileCleanup.js';
 import cloudinary from '../config/cloudinary.js';
 
 /**
@@ -21,9 +21,13 @@ export const createPost = async (req, res) => {
 
     // If image file is provided, upload to Cloudinary and save reference
     if (req.file) {
-      const { url, publicId } = await uploadToCloudinary(req.file.path);
-      imageDoc = await new Image({ url, publicId, uploadedBy: userId }).save();
-      fs.unlinkSync(req.file.path);
+      try {
+        const { url, publicId } = await uploadToCloudinary(req.file.path);
+        imageDoc = await new Image({ url, publicId, uploadedBy: userId }).save();
+      } finally {
+        // Always delete the temporary file, even if upload fails
+        safeDeleteFile(req.file.path);
+      }
     }
 
     // Create new post document
@@ -134,9 +138,13 @@ export const updatePost = async (req, res) => {
       }
 
       // Upload new image
-      const { url, publicId } = await uploadToCloudinary(req.file.path);
-      newImageDoc = await new Image({ url, publicId, uploadedBy: userId }).save();
-      fs.unlinkSync(req.file.path);
+      try {
+        const { url, publicId } = await uploadToCloudinary(req.file.path);
+        newImageDoc = await new Image({ url, publicId, uploadedBy: userId }).save();
+      } finally {
+        // Always delete the temporary file, even if upload fails
+        safeDeleteFile(req.file.path);
+      }
     }
 
     // Update fields

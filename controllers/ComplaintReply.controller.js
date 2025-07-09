@@ -18,11 +18,17 @@ export const createComplaintReply = async (req, res) => {
       return res.status(400).json({ success: false, message: "Content and complaintId are required." });
     }
 
+    // Check if complaint exists
+    const complaint = await UserComplaint.findById(complaintId);
+    if (!complaint) {
+      return res.status(404).json({ success: false, message: "Complaint not found." });
+    }
+
     // Create new complaint reply document
     const reply = await new ComplaintReply({
       content,
-      user: userId, // Fixed: should be 'user' not 'userId' as per Mongoose model
-      complaint: complaintId // Fixed: should be 'complaint' not 'complaintId' as per Mongoose model
+      userId: userId,
+      complaintId: complaintId
     }).save();
 
     // Add reply reference to the complaint
@@ -30,7 +36,11 @@ export const createComplaintReply = async (req, res) => {
       $push: { replies: reply._id }
     });
 
-    res.status(201).json({ success: true, reply });
+    // Populate user info for response
+    const populatedReply = await ComplaintReply.findById(reply._id)
+      .populate('userId', 'name email');
+
+    res.status(201).json({ success: true, reply: populatedReply });
   } catch (err) {
     console.error("Error creating complaint reply:", err);
     res.status(500).json({ success: false, message: "Failed to create reply" });
