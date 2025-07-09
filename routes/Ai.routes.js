@@ -3,11 +3,18 @@ import { getCommentAIReply, getComplaintAIReply } from "../controllers/AiRespons
 
 const router = express.Router();
 
-// For Ai generated reply on Particular complaint
+/**
+ * @route POST /api/ai/suggestComplaintReply
+ * @desc Generate AI-powered reply for a user complaint
+ * @access Private
+ */
 router.post("/suggestComplaintReply", getComplaintAIReply);
 
-
-// For Ai generated reply and sentiment for Comment
+/**
+ * @route POST /api/ai/suggestCommentReply
+ * @desc Generate AI-powered reply and sentiment for a comment
+ * @access Private
+ */
 router.post("/suggestCommentReply", getCommentAIReply);
 
 export default router;

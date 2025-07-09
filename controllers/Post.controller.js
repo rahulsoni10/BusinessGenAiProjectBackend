@@ -5,7 +5,12 @@ import { uploadToCloudinary } from '../helpers/cloudinaryHelper.js';
 import fs from 'fs';
 import cloudinary from '../config/cloudinary.js';
 
-// Create Post
+/**
+ * Create a new post with optional image upload.
+ * @route POST /api/posts
+ * @body { title: String, description: String, file?: File }
+ * @returns { success: Boolean, post: Object }
+ */
 export const createPost = async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -14,12 +19,14 @@ export const createPost = async (req, res) => {
     let imageDoc = null;
     console.log('File received:', req.file);
 
+    // If image file is provided, upload to Cloudinary and save reference
     if (req.file) {
       const { url, publicId } = await uploadToCloudinary(req.file.path);
       imageDoc = await new Image({ url, publicId, uploadedBy: userId }).save();
       fs.unlinkSync(req.file.path);
     }
 
+    // Create new post document
     const post = await new Post({
       title,
       description,
@@ -27,43 +34,51 @@ export const createPost = async (req, res) => {
       image: imageDoc?._id || null,
     }).save();
     
+    // Populate image fields for response
     const populatedPost = await Post.findById(post._id)
-          .populate({
-            path: 'image',
-            select: 'url public_id -_id', // Only return useful fields
-          });
+      .populate({
+        path: 'image',
+        select: 'url public_id -_id',
+      });
 
     res.status(201).json({ success: true, post: populatedPost });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Failed to create post" });
   }
 };
 
-// Get All Posts
+/**
+ * Get all posts with author, image, comments, and replies populated.
+ * @route GET /api/posts
+ * @returns { success: Boolean, posts: Array }
+ */
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find()
-          .populate('author', 'name')
-  .populate('image')
-  .populate({
-    path: 'comments',
-    populate: [
-      { path: 'user', select: 'name' },
-      {
-        path: 'replies',
-        populate: { path: 'user', select: 'name' }  // ⬅️ Populating reply user name
-      }
-    ]
-  });
+      .populate('author', 'name')
+      .populate('image')
+      .populate({
+        path: 'comments',
+        populate: [
+          { path: 'user', select: 'name' },
+          {
+            path: 'replies',
+            populate: { path: 'user', select: 'name' }
+          }
+        ]
+      });
     res.status(200).json({ success: true, posts });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to fetch posts" });
   }
 };
 
-// Get One Post
+/**
+ * Get a single post by ID with all relations populated.
+ * @route GET /api/posts/:id
+ * @returns { success: Boolean, post: Object }
+ */
 export const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
@@ -71,11 +86,11 @@ export const getPostById = async (req, res) => {
       .populate("image")
       .populate({
         path: "comments",
-         populate: [
+        populate: [
           { path: "user", select: "name" },
           {
             path: "replies",
-            populate: { path: "user", select: "name" } // also get replier name
+            populate: { path: "user", select: "name" }
           }
         ]
       });
@@ -88,7 +103,12 @@ export const getPostById = async (req, res) => {
   }
 };
 
-// Update Post (title, desc, and optional new image)
+/**
+ * Update a post's title, description, and optionally image. Only the author can update.
+ * @route PUT /api/posts/:id
+ * @body { title?: String, description?: String, file?: File }
+ * @returns { success: Boolean, post: Object }
+ */
 export const updatePost = async (req, res) => {
   try {
     const postId = req.params.id;
@@ -132,7 +152,11 @@ export const updatePost = async (req, res) => {
   }
 };
 
-// Delete Post + delete associated image
+/**
+ * Delete a post and its associated image. Only the author can delete.
+ * @route DELETE /api/posts/:id
+ * @returns { success: Boolean, message: String }
+ */
 export const deletePost = async (req, res) => {
   try {
     const postId = req.params.id;
@@ -160,8 +184,11 @@ export const deletePost = async (req, res) => {
   }
 };
 
-
-// Toggle Like Post
+/**
+ * Toggle like/unlike for a post by the current user.
+ * @route POST /api/posts/:id/like
+ * @returns { success: Boolean, liked: Boolean, likes: Number }
+ */
 export const likePost = async (req, res) => {
   try {
     const postId = req.params.id;

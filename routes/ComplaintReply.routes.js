@@ -4,7 +4,11 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// User can raise complaint on this route
+/**
+ * @route POST /api/complaint-replies/create
+ * @desc Create a reply for a user complaint
+ * @access Private
+ */
 router.post('/create', authMiddleware, createComplaintReply);
 
 export default router;

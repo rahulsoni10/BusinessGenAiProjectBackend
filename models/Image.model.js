@@ -1,5 +1,14 @@
 import mongoose from 'mongoose';
 
+/**
+ * Image Schema
+ * @typedef {Object} Image
+ * @property {String} url - Image URL
+ * @property {String} publicId - Cloudinary public ID
+ * @property {mongoose.Types.ObjectId} uploadedBy - Reference to User
+ * @property {Date} createdAt
+ * @property {Date} updatedAt
+ */
 const ImageSchema = new mongoose.Schema(
   {
     url: {

@@ -1,5 +1,16 @@
 import mongoose from 'mongoose';
 
+/**
+ * Comment Schema
+ * @typedef {Object} Comment
+ * @property {String} content - The comment text
+ * @property {String} sentiment - Sentiment label (Positive, Neutral, Negative)
+ * @property {mongoose.Types.ObjectId} user - Reference to User
+ * @property {mongoose.Types.ObjectId} post - Reference to Post
+ * @property {Array<mongoose.Types.ObjectId>} replies - References to CommentReply
+ * @property {Date} createdAt
+ * @property {Date} updatedAt
+ */
 const commentSchema = new mongoose.Schema({
   content: { type: String, required: true },
   sentiment: { type: String, enum: ["Positive", "Neutral", "Negative"], required: true },

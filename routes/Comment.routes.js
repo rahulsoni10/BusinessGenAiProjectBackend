@@ -4,7 +4,11 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// This route help user as well as admin to create comment on specific post
+/**
+ * @route   POST /api/comments/create
+ * @desc    Create a comment on a specific post
+ * @access  Private
+ */
 router.post('/create', authMiddleware, createComment);
 
 export default router;

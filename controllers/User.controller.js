@@ -2,13 +2,17 @@ import User from '../models/User.model.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-
-
-
+/**
+ * Register a new user.
+ * @route POST /api/users/register
+ * @body { name: String, email: String, password: String, role?: String }
+ * @returns { success: Boolean, accessToken: String, user: Object }
+ */
 export const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -17,9 +21,11 @@ export const register = async (req, res) => {
       });
     }
 
+    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Create new user document
     const newUser = new User({
       name,
       email,
@@ -29,6 +35,7 @@ export const register = async (req, res) => {
 
     await newUser.save();
 
+    // Generate JWT access token
     const accessToken = jwt.sign(
       { userId: newUser._id, role: newUser.role },
       process.env.JWT_SECRET,
@@ -55,13 +62,17 @@ export const register = async (req, res) => {
   }
 };
 
-
-
-
+/**
+ * Login a user and return JWT token.
+ * @route POST /api/users/login
+ * @body { email: String, password: String }
+ * @returns { success: Boolean, accessToken: String, user: Object }
+ */
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({
@@ -70,6 +81,7 @@ export const login = async (req, res) => {
       });
     }
 
+    // Compare password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       return res.status(400).json({
@@ -78,6 +90,7 @@ export const login = async (req, res) => {
       });
     }
 
+    // Generate JWT access token
     const accessToken = jwt.sign(
       {
         userId: user._id,
