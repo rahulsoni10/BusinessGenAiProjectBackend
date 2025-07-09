@@ -58,7 +58,7 @@ export const createComment = async (req, res) => {
     const sentiment = await classifySentiment(content);
 
     // Create new comment document
-    const newComment = await new Comment({
+    let newComment = await new Comment({
       content,
       sentiment,
       user: userId,
