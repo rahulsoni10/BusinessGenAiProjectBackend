@@ -1,0 +1,165 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 0,
+    "pending": 0,
+    "failures": 2,
+    "start": "2025-07-09T12:47:37.089Z",
+    "end": "2025-07-09T12:47:37.726Z",
+    "duration": 637,
+    "testsRegistered": 2,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "a41f1e28-383a-471c-82ab-083115f3abc8",
+      "title": "",
+      "fullFile": "C:\\Users\\SURAJ PATEL\\OneDrive\\Desktop\\BusinessGenAiBackend\\test\\complaintReply.test.js",
+      "file": "\\test\\complaintReply.test.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "c473246a-b5a5-48c1-b0ed-652ac7b3760b",
+          "title": "Complaint Reply API",
+          "fullFile": "C:\\Users\\SURAJ PATEL\\OneDrive\\Desktop\\BusinessGenAiBackend\\test\\complaintReply.test.js",
+          "file": "\\test\\complaintReply.test.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Complaint Reply API\"",
+              "fullTitle": "Complaint Reply API \"before all\" hook in \"Complaint Reply API\"",
+              "timedOut": false,
+              "duration": 479,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Register and login a user\nawait request(app)\n  .post('/api/users/register')\n  .send({ name: 'Complaint Reply User', email: userEmail, password: 'TestPassword123', role:\"admin\" });\nconst res = await request(app)\n  .post('/api/users/login')\n  .send({ email: userEmail, password: 'TestPassword123' });\ntoken = res.body.accessToken;\n// Raise a complaint to reply to\nconst complaintRes = await request(app)\n  .post('/api/complaints/raise')\n  .set('Authorization', `Bearer ${token}`)\n  .send({\n    orderId: 'ORDER456',\n    productType: 'Books',\n    description: 'Pages missing in the book',\n  });\ncomplaintId = complaintRes.body.complaint._id;",
+              "err": {},
+              "uuid": "9e7d4791-2b4e-4181-b25c-c9f203b2f4d8",
+              "parentUUID": "c473246a-b5a5-48c1-b0ed-652ac7b3760b",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Complaint Reply API\"",
+              "fullTitle": "Complaint Reply API \"after all\" hook in \"Complaint Reply API\"",
+              "timedOut": false,
+              "duration": 23,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "if (process.env.NODE_ENV === 'test') {\n  await mongoose.connection.dropDatabase();\n  await mongoose.disconnect();\n}",
+              "err": {},
+              "uuid": "7419b562-f7db-4645-94a8-12790d95b39a",
+              "parentUUID": "c473246a-b5a5-48c1-b0ed-652ac7b3760b",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "should create a reply for a complaint",
+              "fullTitle": "Complaint Reply API should create a reply for a complaint",
+              "timedOut": false,
+              "duration": 38,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "const res = await request(app)\n  .post('/api/complaint-replies')\n  .set('Authorization', `Bearer ${token}`)\n  .send({\n    content: 'We are sorry for the inconvenience. We will send a replacement.',\n    complaintId,\n  });\nexpect(res.statusCode).to.be.oneOf([201, 200]);\nexpect(res.body).to.have.property('success', true);\nexpect(res.body).to.have.property('reply');\nexpect(res.body.reply).to.have.property('content');\nexpect(res.body.reply).to.have.property('complaint');\nreplyId = res.body.reply._id;",
+              "err": {
+                "message": "AssertionError: expected 404 to be one of [ 201, 200 ]",
+                "estack": "AssertionError: expected 404 to be one of [ 201, 200 ]\n    at Context.<anonymous> (file:///C:/Users/SURAJ%20PATEL/OneDrive/Desktop/BusinessGenAiBackend/test/complaintReply.test.js:61:34)\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)",
+                "diff": null
+              },
+              "uuid": "f858ace4-2790-4669-8160-24a19fd1ff29",
+              "parentUUID": "c473246a-b5a5-48c1-b0ed-652ac7b3760b",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should not create a reply with missing fields",
+              "fullTitle": "Complaint Reply API should not create a reply with missing fields",
+              "timedOut": false,
+              "duration": 10,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "const res = await request(app)\n  .post('/api/complaint-replies')\n  .set('Authorization', `Bearer ${token}`)\n  .send({ content: 'Missing complaintId' });\nexpect(res.statusCode).to.be.oneOf([400, 422]);\nexpect(res.body).to.have.property('success', false);",
+              "err": {
+                "message": "AssertionError: expected 404 to be one of [ 400, 422 ]",
+                "estack": "AssertionError: expected 404 to be one of [ 400, 422 ]\n    at Context.<anonymous> (file:///C:/Users/SURAJ%20PATEL/OneDrive/Desktop/BusinessGenAiBackend/test/complaintReply.test.js:74:34)\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)",
+                "diff": null
+              },
+              "uuid": "81a483f0-0bba-4829-b5ab-43da46cc41c3",
+              "parentUUID": "c473246a-b5a5-48c1-b0ed-652ac7b3760b",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "f858ace4-2790-4669-8160-24a19fd1ff29",
+            "81a483f0-0bba-4829-b5ab-43da46cc41c3"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 48,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 10000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 10000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "11.7.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": null,
+      "version": "6.2.0"
+    }
+  }
+}
