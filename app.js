@@ -1,39 +1,54 @@
 import express from 'express';
-import dotenv from 'dotenv'
-
+import dotenv from 'dotenv';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import connectDB from './db/connectDB.js';
-import userRoute from './routes/User.routes.js'
-import commentRoute from './routes/Comment.routes.js'
-import commentReplyRoute from './routes/CommentReply.routes.js'
-import postRoute from './routes/Post.routes.js'
-import complaintRoute from './routes/UserComplaint.routes.js';
-import complaintReplyRoute from './routes/ComplaintReply.routes.js';
-import aiRoutes from "./routes/Ai.routes.js";
-import cors from 'cors';
+import routes from './routes/index.js';
+import { securityMiddleware } from './middleware/security.js';
+import { morganMiddleware } from './utils/logger.js';
+import errorHandler from './middleware/errorHandler.js';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 
+// Security middleware
+securityMiddleware(app);
 
-// Middleware for body parser and cors error
+// CORS configuration
 app.use(cors({
-  origin: true,
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true,
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
 
+// Body parser middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Cookie parser middleware
+app.use(cookieParser());
+
+// Logging middleware
+app.use(morganMiddleware);
 
 // Database connection
 connectDB();
 
+// API routes
+app.use('/api', routes);
 
-app.use('/api/users', userRoute);// user routes contain login/register related route
-app.use('/api/posts', postRoute);// post related routes for user as well as admin
-app.use('/api/comments', commentRoute);// comments related routes for user as well as admin
-app.use('/api/comment-replies', commentReplyRoute);// reply related routes for user as well as admin
-app.use('/api/complaints', complaintRoute);// complaint related routes for user as well as admin
-app.use('/api/complaint-replies', complaintReplyRoute);// coplaint reply related routes for user as well as admin
-app.use("/api/ai", aiRoutes);// routes for api hugging face api
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
+  });
+});
 
-export default app;
+// Global error handler (must be last)
+app.use(errorHandler);
+
+export default app; 
